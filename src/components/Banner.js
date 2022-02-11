@@ -1,10 +1,13 @@
 import { React, useEffect, useState } from 'react';
 import axios from '../utils/axios';
 import requests from '../utils/requests';
+import movieTrailer from 'movie-trailer';
+import YouTube from 'react-youtube';
 import '../styles/Banner.css';
 
 function Banner() {
   const [movie, setMovie] = useState([]);
+  const [trailerUrl, setTrailerUrl] = useState("");
   useEffect(() => {
     /* Grab random movie from database for background image */
     async function fetchData() {
@@ -14,6 +17,28 @@ function Banner() {
     }
     fetchData();
   }, []);
+
+  const handleClick = (movie) => {
+    if (trailerUrl) {
+      setTrailerUrl('');
+    } else {
+      movieTrailer(movie?.name || "")
+        .then(url => {
+          /* This will search for the video
+           * and grab the video id(v) from YouTube */
+          const urlParams = new URLSearchParams(new URL(url).search);
+          setTrailerUrl(urlParams.get('v'));
+        }).catch(error => console.log(error));
+    }
+  }
+  /* Options for trailer videos */
+  const opts = {
+    height: "240",
+    width: "100%",
+    playerVars: {
+      autoPlay: 1,
+    },
+  }
 
   /* truncate the text for the movie descriptions */
   function truncate(str, n) {
@@ -30,12 +55,11 @@ function Banner() {
       <div className='banner_content'>
         <h1 className='banner_title'>{movie?.title || movie?.name || movie?.original_name}</h1>
         <div className="banner_btns">
-          <button className="banner_btn">Play</button>
+          <button className="banner_btn" onClick={() => handleClick(movie)}>Play</button>
           <button className="banner_btn">My List</button>
         </div>
-        <h1 className='banner_desc'>
-          {truncate(movie?.overview, 150)}
-        </h1>
+        {trailerUrl && <YouTube videoId={trailerUrl} opts={opts} className="banner_video" />}
+        {!trailerUrl && <h1 className='banner_desc'>{truncate(movie?.overview, 150)}</h1>}
       </div>
       <div className='banner_fadebtm' />
     </header >
