@@ -10,7 +10,7 @@ function Nav() {
    * a background navbar appears */
   useEffect(() => {
     window.addEventListener("scroll", () => {
-      if (window.scrollY > 110) {
+      if (window.scrollY > 100) {
         handleShow(true);
       } else handleShow(false);
     });
@@ -22,7 +22,7 @@ function Nav() {
   }, []);
 
   return (
-    <div className={`nav${show && "nav_black"}`}>
+    <div className={`nav ${show && "nav_black"}`}>
       <img
         className='nav_logo'
         src='https://upload.wikimedia.org/wikipedia/commons/7/7a/Logonetflix.png'
